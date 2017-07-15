@@ -5,6 +5,16 @@ This workshop is intended to be run on a machine with GPU support & uses jupyter
 
 The goal of the workshop is to use Keras to build a CNN on a small data set. The idea is to become familiar with how to set up Keras to train a model.
 
+## AWS GPU instance configuration
+If you want to set up an AWS GPU instance, the neccessary steps are described in:
+Part1_install_aws.sh
+Part2_install_MANUAL_aws.sh
+Part3_install_aws.sh
+
+If you just want to run it on your local machine (CPU version) you can use this docker image:
+docker run -it tensorflow/tensorflow:nightly-devel-gpu-py3 bash
+pip install keras
+
 ## Prerequisites
 To run model with Cat / Dog images you can get the images here:
 https://www.microsoft.com/en-us/download/details.aspx?id=54765
