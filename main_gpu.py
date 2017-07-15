@@ -1,23 +1,19 @@
 # import modules
-import keras
-from keras.datasets import mnist
 from keras.preprocessing.image import array_to_img, load_img
 import matplotlib.pyplot as plt
-import numpy as np
 import random
 import os
-from shutil import copyfile, rmtree
-from PIL import Image
 
 
 # Path to image data
 path = 'D:/Studium_GD/Zooniverse/Data/cnn_workshop/PetImages/'
-path = '/host/data/cnn_workshop/CatDog/'
-# prepare paths
-# group_name = 'group1/'
-# s.mkdir(path + group_name)
-# os.mkdir(path + group_name + 'train')
-# os.mkdir(path + group_name + 'test')
+path = '/host/data/cnn_workshop/EleZebra/'
+
+# get class labels
+class_labels = os.listdir(path + 'train')
+
+# parameters
+image_size_for_training = (250, 250, 3)
 
 
 # Look at some images
@@ -34,49 +30,8 @@ def look_at_imgs(path, n=5):
         plt.show()
         print(path + random_imgs[i])
 
-look_at_imgs(path + 'Cat/')
-look_at_imgs(path + 'Dog/')
-
-
-# Generate  Training / Test / Validation Split
-from sklearn.model_selection import train_test_split
-
-# get all files and labels
-files = [path + 'Cat/' + x for x in os.listdir(path + 'Cat')]
-labels = ['Cat' for x in range(0, len(files))]
-dog_files = [path + 'Dog/' + x for x in os.listdir(path + 'Dog')]
-labels_dog = ['Dog' for x in range(0, len(dog_files))]
-files.extend(dog_files)
-labels.extend(labels_dog)
-
-# generate splits
-id_train, id_test = train_test_split(files,
-                                     train_size=2000,
-                                     test_size=1000,
-                                     stratify=labels,
-                                     random_state=234)
-
-# create directories
-def create_new(path):
-    # create new directory
-    if os.path.isdir(path):
-        rmtree(path)
-    os.mkdir(path)
-
-create_new(path + 'train/' + 'Dog/')
-create_new(path + 'test/' + 'Dog/')
-create_new(path  + 'train/' + 'Cat/')
-create_new(path + 'test/' + 'Cat/')
-
-# copy training / test files to dedicated dirs
-def copy_files(path, files):
-    for f in files:
-        label = f.split('/')[-2]
-        fname = f.split('/')[-1]
-        copyfile(f, path + label + '/' + fname)
-
-copy_files(path=path + 'train/', files=id_train)
-copy_files(path=path  + 'test/', files=id_test)
+look_at_imgs(path + class_labels[0] + '/')
+look_at_imgs(path + class_labels[1] + '/')
 
 
 # Create Data Generator
@@ -109,7 +64,7 @@ datagen_raw = ImageDataGenerator(
 
 raw_gen = datagen_raw.flow_from_directory(
     path + 'train/',
-    target_size=(150, 150),
+    target_size=image_size_for_training[0:2],
     batch_size=1000,
     class_mode='binary',
     seed=123)
@@ -123,14 +78,14 @@ datagen_test.fit(X_raw[0])
 # fetch data from directory in specified batch sizes
 train_generator = datagen_train.flow_from_directory(
     path + 'train/',
-    target_size=(150, 150),
+    target_size=image_size_for_training[0:2],
     batch_size=batch_size,
     class_mode='binary',
     seed=123)
 
 test_generator = datagen_test.flow_from_directory(
     path + 'test/',
-    target_size=(150, 150),
+    target_size=image_size_for_training[0:2],
     batch_size=batch_size,
     class_mode='binary',
     seed=123)
@@ -138,7 +93,7 @@ test_generator = datagen_test.flow_from_directory(
 # dummy generator to look at data
 dummy_gen = datagen_train.flow_from_directory(
     path + 'train/',
-    target_size=(150, 150),
+    target_size=image_size_for_training[0:2],
     batch_size=5,
     class_mode='binary',
     seed=123)
@@ -161,7 +116,7 @@ from keras.models import Model
 model = Sequential()
 # Convolutional layer over 2 dimensions
 # 32 filters, each with a size of 3x3 pixels
-model.add(Conv2D(32, (3, 3), input_shape=(150, 150, 3)))
+model.add(Conv2D(32, (3, 3), input_shape=image_size_for_training))
 # activation function
 model.add(Activation('relu'))
 # Aggregate data using max pooling (reduce size of feature maps)
@@ -197,11 +152,29 @@ model.compile(loss='binary_crossentropy',
 model.fit_generator(
     train_generator,
     steps_per_epoch=train_generator.n // batch_size,
-    epochs=20,
+    epochs=2,
     workers=2,
     validation_data=test_generator,
     validation_steps=test_generator.n // batch_size)
 
+# predict on test sample
+
+# get a test batch
+test_batch_data = test_generator.next()
+# get class information to make correct mapping
+classes = test_generator.class_indices
+for cl, no in classes.items():
+    if no == 1:
+        class1 = cl
+# calculate predictions
+p_test = model.predict_on_batch(test_batch_data[0])
+
+# show some images and their prediction
+for i in range(0, len(test_batch_data[1])):
+    print("Predicted %s percent of being a %s" %
+          (round(float(p_test[i] * 100), 2), class1))
+    plt.imshow(array_to_img(test_batch_data[0][i, :]))
+    plt.show()
 
 # Load a pre-trained model
 from keras.applications.inception_v3 import InceptionV3
@@ -210,7 +183,7 @@ from keras.applications.inception_v3 import InceptionV3
 base_model = InceptionV3(
     include_top=False,
     weights='imagenet',
-    input_shape=(150, 150, 3))
+    input_shape=image_size_for_training)
 
 # take a look at its architecture
 base_model.summary()

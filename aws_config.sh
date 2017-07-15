@@ -1,3 +1,9 @@
+# get code
+sudo rm -r ~/code/cnn_workshop
+git clone https://github.com/marco-willi/cnn_workshop.git ~/code/cnn_workshop
+
+
+
 sudo nvidia-docker run -it -v ~/:/host root/tensorflow:latest-devel-gpu-py3 bash
 
 
