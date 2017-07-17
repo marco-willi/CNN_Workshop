@@ -5,6 +5,8 @@ git clone https://github.com/marco-willi/cnn_workshop.git ~/code/cnn_workshop
 # run nvidia docker with jupyter notebook
 # restrict access to AWS instance to SSH
 # and TCP custom, my IP and port 8888
+# this is a custom-compiled tensorflow docker, you can also use the container
+# published on docker hub
 sudo nvidia-docker run -it -p 8888:8888 -v ~/:/host root/tensorflow:latest-devel-gpu-py3 jupyter notebook --allow-root --notebook-dir=/host/code/cnn_workshop
 
 
