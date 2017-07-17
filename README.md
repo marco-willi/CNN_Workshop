@@ -7,7 +7,7 @@ The goal of the workshop is to use Keras to build a CNN on a small data set. The
 
 ## AWS GPU instance configuration
 If you want to set up an AWS GPU instance, the neccessary steps are described in:
-* Part1_install_aws.sh 
+* Part1_install_aws.sh
 * Part2_install_MANUAL_aws.sh
 * Part3_install_aws.sh
 
@@ -25,3 +25,4 @@ To run model with Elephant / Zebra data, a specific Zooniverse AMI has to be use
 
 ## Resources / Links
 https://blog.keras.io/building-powerful-image-classification-models-using-very-little-data.html
+https://github.com/erikreppel/visualizing_cnns/blob/master/visualize_cnns.ipynb
