@@ -9,7 +9,8 @@ git clone https://github.com/marco-willi/cnn_workshop.git ~/code/cnn_workshop
 # published on docker hub
 sudo nvidia-docker run -it -p 8888:8888 -v ~/:/host root/tensorflow:latest-devel-gpu-py3 jupyter notebook --allow-root --notebook-dir=/host/code/cnn_workshop
 
-
+# local notebook
+jupyter notebook --notebook-dir=D:/Studium_GD/Zooniverse/GitHub/CNN_Workshop
 
 # run
 sudo nvidia-docker run -it -v ~/:/host root/tensorflow:latest-devel-gpu-py3 bash
