@@ -23,7 +23,7 @@ To run model with MNIST data (CPU version), the data can be downloaded from with
 
 To run model with Elephant / Zebra data, a specific Zooniverse AMI has to be used (not available for the public).
 
-# Workshop files
+## Workshop files
 The GPU notebook is: _CNN_Workshop_GPU.ipynb_
 
 The CPU notebook is: _CNN_Workshop_CPU.ipynb_
